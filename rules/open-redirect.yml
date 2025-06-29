@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: open-redirect
+message: Potential Open Redirect vulnerability detected. User input is being used for redirection without validation.
+severity: hint
+language: Ruby
+note: |
+  Open Redirect occurs when user-controlled input is used to determine redirect destinations
+  without proper validation. This can be used for phishing attacks.
+  Validate redirect URLs against a whitelist of allowed domains.
+
+rule:
+  any:
+    - pattern: redirect_to params[$VAR]
+    - pattern: redirect_to params.fetch($VAR)
+    - pattern: redirect_to params.require($VAR)
+    - pattern: params[:redirect_url]

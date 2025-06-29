@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: path-traversal
+message: Potential Path Traversal vulnerability detected. User input is being used to construct file paths without validation.
+severity: hint
+language: Ruby
+note: |
+  Path Traversal (Directory Traversal) occurs when user input is used to construct file paths
+  without proper validation. This allows attackers to access files outside the intended directory.
+  Validate and sanitize file paths, and use File.basename() or similar functions.
+
+rule:
+  any:
+    - pattern: Rails.root.join($$$, $VAR, $$$)
+    - pattern: File.join($$$, $VAR, $$$)
+    - pattern: send_file $VAR

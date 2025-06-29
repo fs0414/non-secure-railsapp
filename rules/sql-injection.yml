@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: sql-injection
+message: Potential SQL injection vulnerability detected. User input is being directly interpolated into SQL queries.
+severity: hint
+language: Ruby
+note: |
+  SQL injection occurs when user input is directly concatenated or interpolated into SQL queries.
+  Use parameterized queries or ActiveRecord's built-in query methods instead.
+
+rule:
+  any:
+    - pattern: $OBJ.find_by_sql($_)
+    - pattern: $OBJ.where($_)
+    - pattern: $OBJ.execute($_)

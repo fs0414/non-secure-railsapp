@@ -1,0 +1,57 @@
+<% content_for :title, @post.title %>
+
+<article>
+  <h1><%= @post.title %></h1>
+  <p style="color: #666; font-size: 14px;">
+    by <%= @post.user.email %> • <%= @post.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+  </p>
+  
+  <div style="margin: 30px 0; line-height: 1.6;">
+    <%= simple_format(@post.body) %>
+  </div>
+  
+  <div style="margin: 20px 0;">
+    <%= link_to "← Back to posts", posts_path, style: "color: #007bff; text-decoration: none;" %>
+    <% if user_signed_in? && @post.user == current_user %>
+      • <%= link_to "Edit", edit_post_path(@post), style: "color: #28a745; text-decoration: none;" %>
+      • <%= link_to "Delete", @post, data: { "turbo-method": :delete, turbo_confirm: "Are you sure?" }, style: "color: #dc3545; text-decoration: none;" %>
+    <% end %>
+  </div>
+</article>
+
+<hr style="margin: 40px 0;">
+
+<section>
+  <h3>Comments (<%= @comments.count %>)</h3>
+  
+  <% if user_signed_in? %>
+    <%= form_with model: [@post, @comment] do |form| %>
+      <div style="margin-bottom: 20px;">
+        <%= form.text_area :content, rows: 3, style: "width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;", placeholder: "Add a comment..." %>
+        <% if @comment.errors.any? %>
+          <div style="color: red;">
+            <%= @comment.errors.full_messages.join(", ") %>
+          </div>
+        <% end %>
+      </div>
+      <%= form.submit "Post Comment", style: "background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" %>
+    <% end %>
+  <% else %>
+    <p><%= link_to "Login to comment", new_user_session_path %></p>
+  <% end %>
+  
+  <div style="margin-top: 30px;">
+    <% @comments.each do |comment| %>
+      <div style="border-left: 3px solid #ddd; padding-left: 15px; margin-bottom: 20px;">
+        <p style="margin: 0 0 5px 0;"><strong><%= comment.user.email %></strong> • <%= comment.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <!-- VULNERABLE: XSS - 意図的な脆弱性（実験目的） -->
+        <p style="margin: 0;"><%= raw comment.content %></p>
+        <% if user_signed_in? && comment.user == current_user %>
+          <p style="margin: 5px 0 0 0;">
+            <%= link_to "Delete", post_comment_path(@post, comment), data: { "turbo-method": :delete, turbo_confirm: "Are you sure?" }, style: "color: #dc3545; text-decoration: none; font-size: 14px;" %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,2 @@
+This is a sample file for download testing.
+実験環境用のサンプルファイルです。

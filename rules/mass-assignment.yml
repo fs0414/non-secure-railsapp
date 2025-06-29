@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: mass-assignment
+message: Potential Mass Assignment vulnerability detected. Dangerous parameters are being permitted.
+severity: hint
+language: Ruby
+note: |
+  Mass Assignment occurs when all parameters are permitted without filtering,
+  or when sensitive attributes like admin flags are permitted.
+  Use specific parameter filtering with permit() instead of permit!.
+
+rule:
+  any:
+    - pattern: params.require($$$).permit!
+    - pattern: params.permit!
+    - pattern: $OBJ.update(params.require($$$).permit!)
+    - pattern: $OBJ.update_attributes(params.require($$$).permit!)
+    - pattern: $OBJ.assign_attributes(params.require($$$).permit!)
+    - all:
+        - pattern: permit($$$ARGS$$$)
+        - regex: ".*:is_admin.*"
+    - all:
+        - pattern: permit($$$ARGS$$$)
+        - regex: ".*:admin.*"
+    - all:
+        - pattern: permit($$$ARGS$$$)
+        - regex: ".*:role.*"

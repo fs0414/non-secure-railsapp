@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: xss
+message: Potential XSS vulnerability detected. User input is being rendered without proper escaping.
+severity: hint
+language: Html
+note: |
+  XSS (Cross-Site Scripting) occurs when user input is rendered in HTML without proper escaping.
+  Use Rails' built-in escaping methods or sanitize user input before rendering.
+
+rule:
+  kind: text
+  regex: "<%=\\s*raw\\s+"

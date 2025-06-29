@@ -1,0 +1,42 @@
+<% content_for :title, "User Profile" %>
+
+<h1>User Profile</h1>
+
+<%= form_with model: @user, url: users_update_path, method: :patch, local: true do |form| %>
+  <% if @user.errors.any? %>
+    <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this profile from being saved:</h2>
+      <ul style="margin: 10px 0;">
+        <% @user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="margin-bottom: 20px;">
+    <%= form.label :email, style: "display: block; margin-bottom: 5px; font-weight: bold;" %>
+    <%= form.email_field :email, style: "width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" %>
+  </div>
+  
+  <!-- 管理者権限の表示（通常は編集不可にすべき） -->
+  <div style="margin-bottom: 20px;">
+    <p><strong>Admin Status:</strong> <%= @user.is_admin? ? "Yes" : "No" %></p>
+    <!-- VULNERABLE: Mass Assignment - 隠しフィールドで is_admin を送信可能 -->
+    <!-- 実験目的の脆弱性 -->
+  </div>
+
+  <div>
+    <%= form.submit "Update Profile", style: "background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;" %>
+    <%= link_to "Back", root_path, style: "margin-left: 10px; color: #6c757d; text-decoration: none;" %>
+  </div>
+<% end %>
+
+<hr style="margin: 40px 0;">
+
+<h3>Debug Info (実験環境用)</h3>
+<p style="font-family: monospace; background-color: #f5f5f5; padding: 10px; border-radius: 5px;">
+  Mass Assignment脆弱性のテスト：<br>
+  開発者ツールでフォームに以下を追加してみてください：<br>
+  &lt;input type="hidden" name="user[is_admin]" value="true"&gt;
+</p>

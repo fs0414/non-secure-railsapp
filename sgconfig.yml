@@ -1,0 +1,6 @@
+ruleDirs:
+- /Users/fujitanisora/dev/my/non-secure-railsapp/rules
+testConfigs:
+- testDir: /Users/fujitanisora/dev/my/non-secure-railsapp/rule-tests
+utilDirs:
+- /Users/fujitanisora/dev/my/non-secure-railsapp/utils

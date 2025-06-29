@@ -1,0 +1,50 @@
+<% content_for :title, "Posts" %>
+
+<h1>All Posts</h1>
+
+<!-- 検索フォーム -->
+<div style="margin-bottom: 30px;">
+  <%= form_with url: posts_path, method: :get, local: true do |form| %>
+    <div style="display: flex; gap: 10px;">
+      <%= form.text_field :search, value: params[:search], placeholder: "Search posts...", style: "flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" %>
+      <%= form.submit "Search", style: "background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" %>
+    </div>
+  <% end %>
+  
+  <% if params[:search].present? %>
+    <!-- VULNERABLE: XSS - 意図的な脆弱性（実験目的） -->
+    <p>検索結果: <%= raw params[:search] %></p>
+  <% end %>
+</div>
+
+<% if @posts.any? %>
+  <div id="posts">
+    <% @posts.each do |post| %>
+      <div style="border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 5px;">
+        <h2><%= link_to post.title, post, style: "color: #333; text-decoration: none;" %></h2>
+        <p style="color: #666; font-size: 14px;">
+          by <%= post.user.email %> • <%= post.created_at.strftime("%B %d, %Y") %>
+        </p>
+        <p><%= truncate(post.body, length: 200) %></p>
+        <div>
+          <%= link_to "Read more", post, style: "color: #007bff; text-decoration: none;" %>
+          <% if user_signed_in? && post.user == current_user %>
+            • <%= link_to "Edit", edit_post_path(post), style: "color: #28a745; text-decoration: none;" %>
+            • <%= link_to "Delete", post, data: { "turbo-method": :delete, turbo_confirm: "Are you sure?" }, style: "color: #dc3545; text-decoration: none;" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p>No posts yet. <%= link_to "Create the first post!", new_post_path %></p>
+<% end %>
+
+<hr style="margin: 40px 0;">
+
+<h3>実験環境用機能</h3>
+<p>
+  <%= link_to "Download sample file", files_download_path(filename: "sample.txt"), style: "color: #007bff; text-decoration: none;" %>
+  <br>
+  <small style="color: #666;">Path Traversalテスト: ?filename=../../../config/database.yml を試してみてください</small>
+</p>
